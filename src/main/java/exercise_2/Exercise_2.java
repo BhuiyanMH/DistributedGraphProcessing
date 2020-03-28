@@ -26,21 +26,39 @@ public class Exercise_2 {
     private static class VProg extends AbstractFunction3<Long,Integer,Integer,Integer> implements Serializable {
         @Override
         public Integer apply(Long vertexID, Integer vertexValue, Integer message) {
-            return null;
+            if (message == Integer.MAX_VALUE|| message<0) {             // superstep 0
+                return vertexValue;
+            } else {                                        // superstep > 0
+                return Math.min(vertexValue,message);
+            }
         }
     }
 
     private static class sendMsg extends AbstractFunction1<EdgeTriplet<Integer,Integer>, Iterator<Tuple2<Object,Integer>>> implements Serializable {
         @Override
         public Iterator<Tuple2<Object, Integer>> apply(EdgeTriplet<Integer, Integer> triplet) {
-            return null;
+            Tuple2<Object,Integer> sourceVertex = triplet.toTuple()._1();
+            Tuple2<Object,Integer> dstVertex = triplet.toTuple()._2();
+            System.out.println("\nSource vertex = \t" + sourceVertex);
+            System.out.println("\nDest. vertex = \t" + dstVertex);
+            System.out.println("\nTriplet = \t" + triplet.toTuple()._3());
+
+            Integer path = sourceVertex._2 + triplet.toTuple()._3();
+
+            if (path >= dstVertex._2||sourceVertex._2==Integer.MAX_VALUE) {   // source vertex value is smaller than dst vertex?
+                // do nothing
+                return JavaConverters.asScalaIteratorConverter(new ArrayList<Tuple2<Object,Integer>>().iterator()).asScala();
+            } else {
+                // propagate source vertex value
+                return JavaConverters.asScalaIteratorConverter(Arrays.asList(new Tuple2<Object,Integer>(triplet.dstId(),path)).iterator()).asScala();
+            }
         }
     }
 
     private static class merge extends AbstractFunction2<Integer,Integer,Integer> implements Serializable {
         @Override
         public Integer apply(Integer o, Integer o2) {
-            return null;
+            return Math.min(o,o2);
         }
     }
 

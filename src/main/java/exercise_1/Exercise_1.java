@@ -24,6 +24,7 @@ public class Exercise_1 {
     private static class VProg extends AbstractFunction3<Long, Integer, Integer, Integer> implements Serializable {
         @Override
         public Integer apply(Long vertexID, Integer vertexValue, Integer message) {
+            System.out.println("Inside VProg: VertexID: "+ vertexID+ " vertexValue: "+ vertexValue+" messsge: "+ message);
             if (message == Integer.MAX_VALUE) {             // superstep 0
                 return vertexValue;
             } else {                                        // superstep > 0
@@ -33,8 +34,10 @@ public class Exercise_1 {
     }
 
     private static class sendMsg extends AbstractFunction1<EdgeTriplet<Integer, Integer>, Iterator<Tuple2<Object, Integer>>> implements Serializable {
+
         @Override
         public Iterator<Tuple2<Object, Integer>> apply(EdgeTriplet<Integer, Integer> triplet) {
+            System.out.println("Inside sendMsg: triplet " + triplet);
             Tuple2<Object, Integer> sourceVertex = triplet.toTuple()._1();
             Tuple2<Object, Integer> dstVertex = triplet.toTuple()._2();
 
@@ -51,8 +54,9 @@ public class Exercise_1 {
     private static class merge extends AbstractFunction2<Integer, Integer, Integer> implements Serializable {
         @Override
         public Integer apply(Integer o, Integer o2) {
+            System.out.println("Inside merge: mesage1 : "+ o +" message2: "+ o2);
             return Math.max(o, o2);
-        }
+        } //find max of to messages, iteratively done on all the messages
     }
 
     public static void maxValue(JavaSparkContext ctx) { //This method is called from the main method
@@ -78,7 +82,7 @@ public class Exercise_1 {
         //create graph from the vertex and edge RDDs
         Graph<Integer, Integer> G = Graph.apply(verticesRDD.rdd(), edgesRDD.rdd(), 1, StorageLevel.MEMORY_ONLY(), StorageLevel.MEMORY_ONLY(),
                 scala.reflect.ClassTag$.MODULE$.apply(Integer.class), scala.reflect.ClassTag$.MODULE$.apply(Integer.class));
-
+        //vertex value, edge value
         GraphOps ops = new GraphOps(G, scala.reflect.ClassTag$.MODULE$.apply(Integer.class), scala.reflect.ClassTag$.MODULE$.apply(Integer.class));
 
         Tuple2<Long, Integer> max = (Tuple2<Long, Integer>) ops.pregel(

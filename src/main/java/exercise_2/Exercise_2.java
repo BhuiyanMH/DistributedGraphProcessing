@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.graphx.*;
-import org.apache.spark.sql.SQLContext;
 import org.apache.spark.storage.StorageLevel;
 import scala.Tuple2;
 import scala.collection.Iterator;
@@ -29,7 +28,7 @@ public class Exercise_2 {
             if (message == Integer.MAX_VALUE || message < 0) {             // superstep 0
                 return vertexValue;
             } else {                                        // superstep > 0
-                return Math.min(vertexValue,message);
+                return Math.min(vertexValue, message);
             }
         }
     }
@@ -39,18 +38,15 @@ public class Exercise_2 {
         public Iterator<Tuple2<Object, Integer>> apply(EdgeTriplet<Integer, Integer> triplet) {
             Tuple2<Object,Integer> sourceVertex = triplet.toTuple()._1();
             Tuple2<Object,Integer> dstVertex = triplet.toTuple()._2();
-            System.out.println("\nSource vertex = \t" + sourceVertex);
-            System.out.println("\nDest. vertex = \t" + dstVertex);
-            System.out.println("\nTriplet = \t" + triplet.toTuple()._3());
 
-            Integer path = sourceVertex._2 + triplet.toTuple()._3();
+            Integer pathCost = sourceVertex._2 + triplet.toTuple()._3();
 
-            if (path >= dstVertex._2||sourceVertex._2==Integer.MAX_VALUE) {   // source vertex value is smaller than dst vertex?
+            if (pathCost >= dstVertex._2 || sourceVertex._2 == Integer.MAX_VALUE) {   // source vertex value is smaller than dst vertex?
                 // do nothing
                 return JavaConverters.asScalaIteratorConverter(new ArrayList<Tuple2<Object,Integer>>().iterator()).asScala();
             } else {
                 // propagate source vertex value
-                return JavaConverters.asScalaIteratorConverter(Arrays.asList(new Tuple2<Object,Integer>(triplet.dstId(),path)).iterator()).asScala();
+                return JavaConverters.asScalaIteratorConverter(Arrays.asList(new Tuple2<Object,Integer>(triplet.dstId(), pathCost)).iterator()).asScala();
             }
         }
     }

@@ -26,7 +26,7 @@ public class Exercise_2 {
     private static class VProg extends AbstractFunction3<Long,Integer,Integer,Integer> implements Serializable {
         @Override
         public Integer apply(Long vertexID, Integer vertexValue, Integer message) {
-            if (message == Integer.MAX_VALUE|| message<0) {             // superstep 0
+            if (message == Integer.MAX_VALUE || message < 0) {             // superstep 0
                 return vertexValue;
             } else {                                        // superstep > 0
                 return Math.min(vertexValue,message);
@@ -106,7 +106,7 @@ public class Exercise_2 {
                 new merge(),
                 ClassTag$.MODULE$.apply(Integer.class))
             .vertices()
-            .toJavaRDD()
+            .toJavaRDD().sortBy(f -> ((Tuple2<Object, Integer>) f)._1, true, 0)
             .foreach(v -> {
                 Tuple2<Object,Integer> vertex = (Tuple2<Object,Integer>)v;
                 System.out.println("Minimum cost to get from "+labels.get(1l)+" to "+labels.get(vertex._1)+" is "+vertex._2);

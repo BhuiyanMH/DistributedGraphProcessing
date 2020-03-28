@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.graphx.*;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SQLContext;
 import org.apache.spark.storage.StorageLevel;
 import scala.Tuple2;
 import scala.collection.Iterator;
@@ -24,7 +22,7 @@ public class Exercise_1 {
     private static class VProg extends AbstractFunction3<Long, Integer, Integer, Integer> implements Serializable {
         @Override
         public Integer apply(Long vertexID, Integer vertexValue, Integer message) {
-            System.out.println("Inside VProg: VertexID: "+ vertexID+ " vertexValue: "+ vertexValue+" messsge: "+ message);
+            //System.out.println("Inside VProg: VertexID: "+ vertexID+ " vertexValue: "+ vertexValue+" messsge: "+ message);
             if (message == Integer.MAX_VALUE) {             // superstep 0
                 return vertexValue;
             } else {                                        // superstep > 0
@@ -37,7 +35,7 @@ public class Exercise_1 {
 
         @Override
         public Iterator<Tuple2<Object, Integer>> apply(EdgeTriplet<Integer, Integer> triplet) {
-            System.out.println("Inside sendMsg: triplet " + triplet);
+            //System.out.println("Inside sendMsg: triplet " + triplet);
             Tuple2<Object, Integer> sourceVertex = triplet.toTuple()._1();
             Tuple2<Object, Integer> dstVertex = triplet.toTuple()._2();
 
@@ -54,7 +52,7 @@ public class Exercise_1 {
     private static class merge extends AbstractFunction2<Integer, Integer, Integer> implements Serializable {
         @Override
         public Integer apply(Integer o, Integer o2) {
-            System.out.println("Inside merge: mesage1 : "+ o +" message2: "+ o2);
+            //System.out.println("Inside merge: mesage1 : "+ o +" message2: "+ o2);
             return Math.max(o, o2);
         } //find max of to messages, iteratively done on all the messages
     }

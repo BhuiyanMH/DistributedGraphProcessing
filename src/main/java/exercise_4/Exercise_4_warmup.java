@@ -15,6 +15,7 @@ public class Exercise_4_warmup {
 
 	
 	public static void warmup(JavaSparkContext ctx, SQLContext sqlCtx) {
+
 		java.util.List<Row> vertices_list = new ArrayList<Row>();
 		vertices_list.add(RowFactory.create("a", "Alice", 34));
 		vertices_list.add(RowFactory.create("b", "Bob", 36));

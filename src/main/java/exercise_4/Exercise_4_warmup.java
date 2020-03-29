@@ -13,7 +13,6 @@ import org.graphframes.GraphFrame;
 
 public class Exercise_4_warmup {
 
-	
 	public static void warmup(JavaSparkContext ctx, SQLContext sqlCtx) {
 
 		java.util.List<Row> vertices_list = new ArrayList<Row>();

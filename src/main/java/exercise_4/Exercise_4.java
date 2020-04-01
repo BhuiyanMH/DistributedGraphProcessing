@@ -1,5 +1,7 @@
 package exercise_4;
 
+import com.google.common.base.Stopwatch;
+import org.apache.parquet.Log;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
@@ -14,6 +16,8 @@ import org.graphframes.GraphFrame;
 import org.graphframes.lib.PageRank;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +27,8 @@ public class Exercise_4 {
 
 	static String VERTEX_FILE_PATH = "src/main/resources/wiki-vertices.txt";
 	static String EDGE_FILE_PATH = "src/main/resources/wiki-edges.txt";
+	static Integer MAX_ITERATIONS = 8;
+	static double DAMPING_FACTOR = 0.90;
 
 	public static void wikipedia(JavaSparkContext ctx, SQLContext sqlCtx) {
 
@@ -32,15 +38,24 @@ public class Exercise_4 {
 		GraphFrame wikiGraphFrame = GraphFrame.apply(vertices,edges);
 
 		PageRank pageRank = new PageRank(wikiGraphFrame);
-		pageRank.resetProbability(0.15);
-		pageRank.maxIter(5);
+		Stopwatch timer = Stopwatch.createUnstarted();
+		// applying a loop to execute the pagerank damping factor in a loop
+		while(DAMPING_FACTOR>.60){
+			timer.start();
+			pageRank.resetProbability(1.0f-DAMPING_FACTOR);
+			pageRank.maxIter(MAX_ITERATIONS);
+			GraphFrame resultGraphFrame = pageRank.run();
+			//resultGraphFrame.vertices().show();
+			System.out.println("Top 10 most relevant articles:");
+			Dataset<Row> sortedVertex = resultGraphFrame.vertices().orderBy(col("pagerank").desc());
+			sortedVertex.show(10);
+			timer.stop();
+			System.out.println("Time for execution for Damping factor = "+ DAMPING_FACTOR+ " is:  "+timer);
+//			LOG.info()
+			DAMPING_FACTOR-=0.1;
+		}
 
-		GraphFrame resultGraphFrame = pageRank.run();
-		//resultGraphFrame.vertices().show();
 
-		System.out.println("Top 10 most relevant articles:");
-		Dataset<Row> sortedVertex = resultGraphFrame.vertices().orderBy(col("pagerank").desc());
-		sortedVertex.show(10);
 	}
 
 	private static Dataset<Row> getVertexFrames(JavaSparkContext ctx, SQLContext sqlCtx){
